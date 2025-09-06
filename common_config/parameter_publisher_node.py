@@ -8,10 +8,10 @@ class ParameterPublisherNode(Node):
         super().__init__('parameter_publisher_node')
 
         # Define constants
-        #self.OBSTACLE_CENTER = [0.5, 0.24, 0.5]
-        self.OBSTACLE_CENTER = [0.0, 0.0, 0.0]
+        self.OBSTACLE_CENTER = [0.4, 0.3, 0.5]
+        #self.OBSTACLE_CENTER = [0.0, 0.0, 0.0]
         self.OBSTACLE_RADIUS = 0.1
-        self.TARGET_POSITION = [0.4, 0.4, 0.5]
+        self.TARGET_POSITION = [0.4, 0.5, 0.5]
         self.WORKSPACE_RADIUS = 0.85
 
         # Publishers
