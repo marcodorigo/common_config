@@ -8,11 +8,11 @@ class ParameterPublisherNode(Node):
         super().__init__('parameter_publisher_node')
 
         # Define constants
-        self.OBSTACLE_CENTER = [0.4, 0.25, 0.5]
+        self.OBSTACLE_CENTER = [0.1, 0.4, 0.45]
         #self.OBSTACLE_CENTER = [0.0, 0.0, 0.0]
-        self.OBSTACLE_RADIUS = 0.05
-        self.TARGET_POSITION = [0.4, 0.4, 0.5]
-        self.WORKSPACE_RADIUS = 0.85
+        self.OBSTACLE_RADIUS = 0.07
+        self.TARGET_POSITION = [0.3, 0.4, 0.5]
+        self.WORKSPACE_RADIUS = 0.9
 
         # Publishers
         self.obstacle_center_pub = self.create_publisher(Float32MultiArray, '/obstacle_center', 10)
