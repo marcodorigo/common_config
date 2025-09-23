@@ -8,14 +8,17 @@ class ParameterPublisherNode(Node):
         super().__init__('parameter_publisher_node')
 
         # Define constants
-        self.OBSTACLE_CENTER = [0.1, 0.5, 0.45]
-        self.OBSTACLE_RADIUS = 0.07
-        self.TARGET_POSITION = [0.3, 0.5, 0.5]
+        self.SPHERICAL_OBSTACLES = [
+            {"center": [0.0, 0.0, 0.0], "radius": 0.07},  # Example spherical obstacle
+            {"center": [0.2, 0.3, 0.4], "radius": 0.05}  # Add more spherical obstacles here
+        ]
+        self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.1, "height": 4.0}  # Cylinder base parameters
+        self.TARGET_POSITION = [0.2, 0.3, 0.5]
         self.WORKSPACE_RADIUS = 0.9
 
         # Publishers
-        self.obstacle_center_pub = self.create_publisher(Float32MultiArray, '/obstacle_center', 10)
-        self.obstacle_radius_pub = self.create_publisher(Float32, '/obstacle_radius', 10)
+        self.spherical_obstacles_pub = self.create_publisher(Float32MultiArray, '/spherical_obstacles', 10)
+        self.cylinder_base_pub = self.create_publisher(Float32MultiArray, '/cylinder_base', 10)
         self.target_position_pub = self.create_publisher(Float32MultiArray, '/target_position', 10)
         self.workspace_radius_pub = self.create_publisher(Float32, '/workspace_radius', 10)
 
@@ -28,15 +31,19 @@ class ParameterPublisherNode(Node):
         self.get_logger().info("Parameter Publisher Node started. Publishing every second for 5 seconds.")
 
     def publish_parameters(self):
-        # Publish obstacle center
-        obstacle_center_msg = Float32MultiArray()
-        obstacle_center_msg.data = self.OBSTACLE_CENTER
-        self.obstacle_center_pub.publish(obstacle_center_msg)
+        # Publish spherical obstacles
+        spherical_obstacles_msg = Float32MultiArray()
+        spherical_obstacles_data = []
+        for obstacle in self.SPHERICAL_OBSTACLES:
+            spherical_obstacles_data.extend(obstacle["center"])
+            spherical_obstacles_data.append(obstacle["radius"])
+        spherical_obstacles_msg.data = spherical_obstacles_data
+        self.spherical_obstacles_pub.publish(spherical_obstacles_msg)
 
-        # Publish obstacle radius
-        obstacle_radius_msg = Float32()
-        obstacle_radius_msg.data = self.OBSTACLE_RADIUS
-        self.obstacle_radius_pub.publish(obstacle_radius_msg)
+        # Publish cylinder base
+        cylinder_base_msg = Float32MultiArray()
+        cylinder_base_msg.data = self.CYLINDER_BASE["center"] + [self.CYLINDER_BASE["radius"], self.CYLINDER_BASE["height"]]
+        self.cylinder_base_pub.publish(cylinder_base_msg)
 
         # Publish target position
         target_position_msg = Float32MultiArray()
