@@ -7,20 +7,14 @@ class ParameterPublisherNode(Node):
     def __init__(self):
         super().__init__('parameter_publisher_node')
 
-        # Define obstacles
+        # Define constants
         self.SPHERICAL_OBSTACLES = [
-            {"center": [0.0, 0.0, 0.0], "radius": 0.07},  
-            {"center": [0.0, 0.0, 0.0], "radius": 0.05}  
+            {"center": [0.0, 0.0, 0.0], "radius": 0.07},  # Example spherical obstacle
+            {"center": [0.2, 0.3, 0.4], "radius": 0.05}  # Add more spherical obstacles here
         ]
-
-        # Define robot base (cylinder)
-        self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 3.0, "height": 4.0}
-
-        # Define target position
+        self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.1, "height": 4.0}  # Cylinder base parameters
         self.TARGET_POSITION = [0.2, 0.3, 0.5]
-
-        # Define workspace radius
-        self.WORKSPACE_RADIUS = 0.85
+        self.WORKSPACE_RADIUS = 0.9
 
         # Publishers
         self.spherical_obstacles_pub = self.create_publisher(Float32MultiArray, '/spherical_obstacles', 10)
@@ -30,6 +24,11 @@ class ParameterPublisherNode(Node):
 
         # Start periodic publishing timer (every 1 second)
         self.publish_timer = self.create_timer(1.0, self.publish_parameters)
+
+        # Start a one-shot timer to stop publishing after 5 seconds
+        self.stop_timer = self.create_timer(5.0, self.stop_publishing)
+
+        self.get_logger().info("Parameter Publisher Node started. Publishing every second for 5 seconds.")
 
     def publish_parameters(self):
         # Publish spherical obstacles
@@ -57,6 +56,11 @@ class ParameterPublisherNode(Node):
         self.workspace_radius_pub.publish(workspace_radius_msg)
 
         self.get_logger().info("Published parameters.")
+
+    def stop_publishing(self):
+        self.publish_timer.cancel()
+        self.get_logger().info("Stopped publishing parameters after 5 seconds.")
+        rclpy.shutdown()  # Automatically shut down the node
 
 
 def main(args=None):
