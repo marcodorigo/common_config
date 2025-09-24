@@ -14,7 +14,7 @@ class ParameterPublisherNode(Node):
         ]
 
         # Define robot base (cylinder)
-        self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.2, "height": 4.0}
+        self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 1.0, "height": 4.0}
 
         # Define target position
         self.TARGET_POSITION = [0.2, 0.3, 0.5]
@@ -28,8 +28,8 @@ class ParameterPublisherNode(Node):
         self.target_position_pub = self.create_publisher(Float32MultiArray, '/target_position', 10)
         self.workspace_radius_pub = self.create_publisher(Float32, '/workspace_radius', 10)
 
-        # Start periodic publishing timer (every 5 seconds)
-        self.publish_timer = self.create_timer(5.0, self.publish_parameters)
+        # Start periodic publishing timer (every 1 second)
+        self.publish_timer = self.create_timer(1.0, self.publish_parameters)
 
     def publish_parameters(self):
         # Publish spherical obstacles
