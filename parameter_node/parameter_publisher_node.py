@@ -10,11 +10,11 @@ class ParameterPublisherNode(Node):
         # Define obstacles
         self.SPHERICAL_OBSTACLES = [
             {"center": [0.0, 0.0, 0.0], "radius": 0.07},  
-            {"center": [0.2, 0.3, 0.4], "radius": 0.05}  
+            {"center": [0.0, 0.0, 0.0], "radius": 0.05}  
         ]
 
         # Define robot base (cylinder)
-        self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 1.0, "height": 4.0}
+        self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 3.0, "height": 4.0}
 
         # Define target position
         self.TARGET_POSITION = [0.2, 0.3, 0.5]
