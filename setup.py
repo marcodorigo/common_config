@@ -1,11 +1,11 @@
 from setuptools import setup
 
-package_name = 'parameter_node'
+package_name = 'common_config'
 
 setup(
     name=package_name,
     version='0.0.0',
-    packages=['parameter_node'],
+    packages=['common_config'],
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'parameter_publisher_node = parameter_node.parameter_publisher_node:main',
+            'parameter_publisher_node = common_config.parameter_publisher_node:main',
         ],
     },
 )
