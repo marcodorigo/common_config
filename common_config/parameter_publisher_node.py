@@ -9,12 +9,12 @@ class ParameterPublisherNode(Node):
 
         # Define constants
         self.SPHERICAL_OBSTACLES = [
-            {"center": [0.0, 0.0, 0.0], "radius": 0.07},  
-            {"center": [0.2, 0.3, 0.4], "radius": 0.05}  
+            {"center": [-0.3, 0.5, 0.5], "radius": 0.07},  
+            {"center": [0.02, 0.42, 0.5], "radius": 0.07}  
         ]
         self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.27, "height": 4.0} 
-        self.TARGET_POSITION = [0.2, 0.3, 0.5]
-        self.WORKSPACE_RADIUS = 0.9
+        self.TARGET_POSITION = [0.3, 0.5, 0.45]
+        self.WORKSPACE_RADIUS = 0.85
 
         # Publishers
         self.spherical_obstacles_pub = self.create_publisher(Float32MultiArray, '/spherical_obstacles', 10)
