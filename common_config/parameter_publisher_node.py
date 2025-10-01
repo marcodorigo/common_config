@@ -51,8 +51,7 @@ class ParameterPublisherNode(Node):
         
         else:  # Default case
             self.SPHERICAL_OBSTACLES = [
-                {"center": [0.0, 0.0, 0.0], "radius": 0.0},
-                {"center": [0.0, 0.0, 0.0], "radius": 0.0}
+                {"center": [0.06, 0.6, 0.35], "radius": 0.07}
             ]
             self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
             self.TARGET_POSITION = [0.3, 0.5, 0.45]
@@ -99,17 +98,17 @@ class ParameterPublisherNode(Node):
         workspace_radius_msg.data = self.WORKSPACE_RADIUS
         self.workspace_radius_pub.publish(workspace_radius_msg)
 
-        # Simulate button presses
-        joy_msg = Joy()
-        joy_msg.buttons = [0, 1, 1]  # Simulate buttons[1] and buttons[2] pressed
-        self.joy_publisher.publish(joy_msg)
+        # # Simulate button presses
+        # joy_msg = Joy()
+        # joy_msg.buttons = [0, 1, 1]  # Simulate buttons[1] and buttons[2] pressed
+        # self.joy_publisher.publish(joy_msg)
 
-        falcon_msg = Joy()
-        falcon_msg.buttons = [0, 1, 1]  # Simulate buttons[1] and buttons[2] pressed
-        self.falcon_buttons_publisher.publish(falcon_msg)
+        # falcon_msg = Joy()
+        # falcon_msg.buttons = [0, 1, 1]  # Simulate buttons[1] and buttons[2] pressed
+        # self.falcon_buttons_publisher.publish(falcon_msg)
 
-        self.get_logger().info(f"Published parameters for trial: {self.get_parameter('trial').get_parameter_value().string_value}")
-        self.get_logger().info("Simulated button presses on /joy and /falcon0/buttons.")
+        # self.get_logger().info(f"Published parameters for trial: {self.get_parameter('trial').get_parameter_value().string_value}")
+        # self.get_logger().info("Simulated button presses on /joy and /falcon0/buttons.")
 
     def stop_publishing(self):
         self.publish_timer.cancel()
