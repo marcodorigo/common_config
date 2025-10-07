@@ -22,7 +22,15 @@ def generate_launch_description():
         }]
     )
 
+    visualizer_node = Node(
+        package='common_config',
+        executable='visualizer_node',
+        name='visualizer_node',
+        output='screen',
+    )
+
     return LaunchDescription([
         trial_arg,
-        parameter_publisher_node
+        parameter_publisher_node,
+        visualizer_node
     ])

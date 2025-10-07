@@ -16,29 +16,35 @@ class ParameterPublisherNode(Node):
         if trial == 'train':
             self.SPHERICAL_OBSTACLES = [
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0},
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0},
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0}
             ]
             self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
-            self.TARGET_POSITION = [0.3, 0.5, 0.45]
+            self.TARGET_POSITION = [0.1, 0.6, 0.45]
             self.WORKSPACE_RADIUS = 0.9
+            self.STARTING_POSITION = [0.0, 0.0, 0.0]
 
         elif trial == 'easy':
             self.SPHERICAL_OBSTACLES = [
-                {"center": [0.08, 0.5, 0.44], "radius": 0.07},
+                {"center": [-0.1, 0.45, 0.3], "radius": 0.1},
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0},
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0}
             ]
             self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
-            self.TARGET_POSITION = [0.3, 0.5, 0.45]
+            self.TARGET_POSITION = [-0.3, 0.4, 0.3]
             self.WORKSPACE_RADIUS = 0.9
+            self.STARTING_POSITION = [0.1, 0.6, 0.45]
 
         elif trial == 'hard':
             self.SPHERICAL_OBSTACLES = [
-                {"center": [0.06, 0.6, 0.35], "radius": 0.07},
-                {"center": [0.0, 0.45, 0.55], "radius": 0.09}
+                {"center": [0.2, 0.65, 0.25], "radius": 0.07},
+                {"center": [0.0, 0.45, 0.55], "radius": 0.09},
+                {"center": [-0.2, 0.7, 0.35], "radius": 0.1}
             ]
             self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
             self.TARGET_POSITION = [0.3, 0.5, 0.45]
             self.WORKSPACE_RADIUS = 0.9
+            self.STARTING_POSITION = [-0.3, 0.4, 0.3]
 
         elif trial == 'singularity':
             self.SPHERICAL_OBSTACLES = [
@@ -48,20 +54,25 @@ class ParameterPublisherNode(Node):
             self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
             self.TARGET_POSITION = [0.5, -0.5, 0.5]
             self.WORKSPACE_RADIUS = 0.9
+            self.STARTING_POSITION = [0.3, 0.5, 0.45]
         
         else:  # Default case
             self.SPHERICAL_OBSTACLES = [
-                {"center": [0.06, 0.6, 0.35], "radius": 0.07}
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0},
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0},
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0}
             ]
             self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
-            self.TARGET_POSITION = [0.3, 0.5, 0.45]
+            self.TARGET_POSITION = [0.1, 0.6, 0.45]
             self.WORKSPACE_RADIUS = 0.9
+            self.STARTING_POSITION = [0.0, 0.0, 0.0]
 
         # Publishers
         self.spherical_obstacles_pub = self.create_publisher(Float32MultiArray, '/spherical_obstacles', 10)
         self.cylinder_base_pub = self.create_publisher(Float32MultiArray, '/cylinder_base', 10)
         self.target_position_pub = self.create_publisher(Float32MultiArray, '/target_position', 10)
         self.workspace_radius_pub = self.create_publisher(Float32, '/workspace_radius', 10)
+        self.starting_position_pub = self.create_publisher(Float32MultiArray, '/starting_position', 10)
 
         # Publishers for simulating button presses
         self.joy_publisher = self.create_publisher(Joy, '/joy', 10)
@@ -109,6 +120,11 @@ class ParameterPublisherNode(Node):
 
         # self.get_logger().info(f"Published parameters for trial: {self.get_parameter('trial').get_parameter_value().string_value}")
         # self.get_logger().info("Simulated button presses on /joy and /falcon0/buttons.")
+
+        # Publish starting position
+        starting_position_msg = Float32MultiArray()
+        starting_position_msg.data = self.STARTING_POSITION
+        self.starting_position_pub.publish(starting_position_msg)
 
     def stop_publishing(self):
         self.publish_timer.cancel()

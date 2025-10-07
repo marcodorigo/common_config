@@ -22,6 +22,7 @@ setup(
     entry_points={
         'console_scripts': [
             'parameter_publisher_node = common_config.parameter_publisher_node:main',
+            'visualizer_node = common_config.visualizer_node:main',
         ],
     },
 )
