@@ -52,7 +52,7 @@ class ParameterPublisherNode(Node):
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0}
             ]
             self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
-            self.TARGET_POSITION = [0.5, -0.5, 0.5]
+            self.TARGET_POSITION = [-0.5, -0.5, 0.5]
             self.WORKSPACE_RADIUS = 0.9
             self.STARTING_POSITION = [0.3, 0.5, 0.45]
         
