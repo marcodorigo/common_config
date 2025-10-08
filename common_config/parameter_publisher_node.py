@@ -19,48 +19,81 @@ class ParameterPublisherNode(Node):
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0},
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0}
             ]
+            self.CYLINDRICAL_OBSTACLES = [
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0, "height": 0.0}
+            ]
             self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
-            self.TARGET_POSITION = [0.1, 0.6, 0.45]
+            self.TARGET_POSITION = [0.2, 0.6, 0.45]
             self.WORKSPACE_RADIUS = 0.9
             self.STARTING_POSITION = [0.0, 0.0, 0.0]
 
         elif trial == 'easy':
             self.SPHERICAL_OBSTACLES = [
-                {"center": [-0.1, 0.45, 0.3], "radius": 0.1},
+                {"center": [-0.1, 0.45, 0.3], "radius": 0.0},
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0},
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0}
+            ]
+            self.CYLINDRICAL_OBSTACLES = [
+                {"center": [-0.1, 0.5, 0.0], "radius": 0.1, "height": 3.0}
             ]
             self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
             self.TARGET_POSITION = [-0.3, 0.4, 0.3]
             self.WORKSPACE_RADIUS = 0.9
-            self.STARTING_POSITION = [0.1, 0.6, 0.45]
+            self.STARTING_POSITION = [0.2, 0.6, 0.45]
 
-        elif trial == 'hard':
+        elif trial == 'medium':
             self.SPHERICAL_OBSTACLES = [
-                {"center": [0.2, 0.65, 0.25], "radius": 0.07},
-                {"center": [0.0, 0.45, 0.55], "radius": 0.09},
-                {"center": [-0.2, 0.7, 0.35], "radius": 0.1}
+                {"center": [-0.05, 0.3, 0.4], "radius": 0.09},
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0},
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0}
+            ]
+            self.CYLINDRICAL_OBSTACLES = [
+                {"center": [0.06, 0.55, 0.0], "radius": 0.08, "height": 3.0}
             ]
             self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
             self.TARGET_POSITION = [0.3, 0.5, 0.45]
             self.WORKSPACE_RADIUS = 0.9
             self.STARTING_POSITION = [-0.3, 0.4, 0.3]
 
+        elif trial == 'hard':
+            self.SPHERICAL_OBSTACLES = [
+                {"center": [0.2, 0.65, 0.25], "radius": 0.0},
+                {"center": [0.0, 0.45, 0.55], "radius": 0.0},
+                {"center": [-0.2, 0.7, 0.35], "radius": 0.0}
+            ]
+            self.CYLINDRICAL_OBSTACLES = [
+                {"center": [0.2, 0.67, 0.0], "radius": 0.07, "height": 3.0},
+                {"center": [0.0, 0.45, 0.0], "radius": 0.09, "height": 3.0},
+                {"center": [-0.2, 0.7, 0.0], "radius": 0.1, "height": 3.0}
+            ]
+            self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
+            self.TARGET_POSITION = [-0.3, 0.4, 0.3]
+            self.WORKSPACE_RADIUS = 0.9
+            self.STARTING_POSITION = [0.3, 0.5, 0.45]
+
         elif trial == 'singularity':
             self.SPHERICAL_OBSTACLES = [
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0},
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0}
             ]
+            self.CYLINDRICAL_OBSTACLES = [
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0, "height": 0.0},
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0, "height": 0.0},
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0, "height": 0.0}
+            ]
             self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
-            self.TARGET_POSITION = [-0.5, -0.5, 0.5]
+            self.TARGET_POSITION = [0.5, -0.5, 0.5]
             self.WORKSPACE_RADIUS = 0.9
-            self.STARTING_POSITION = [0.3, 0.5, 0.45]
+            self.STARTING_POSITION = [-0.3, 0.4, 0.3]
         
         else:  # Default case
             self.SPHERICAL_OBSTACLES = [
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0},
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0},
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0}
+            ]
+            self.CYLINDRICAL_OBSTACLES = [
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0, "height": 0.0}
             ]
             self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
             self.TARGET_POSITION = [0.1, 0.6, 0.45]
@@ -69,6 +102,7 @@ class ParameterPublisherNode(Node):
 
         # Publishers
         self.spherical_obstacles_pub = self.create_publisher(Float32MultiArray, '/spherical_obstacles', 10)
+        self.cylindrical_obstacles_pub = self.create_publisher(Float32MultiArray, '/cylindrical_obstacles', 10)
         self.cylinder_base_pub = self.create_publisher(Float32MultiArray, '/cylinder_base', 10)
         self.target_position_pub = self.create_publisher(Float32MultiArray, '/target_position', 10)
         self.workspace_radius_pub = self.create_publisher(Float32, '/workspace_radius', 10)
@@ -94,6 +128,16 @@ class ParameterPublisherNode(Node):
         spherical_obstacles_msg.data = spherical_obstacles_data
         self.spherical_obstacles_pub.publish(spherical_obstacles_msg)
 
+        # Publish cylindrical obstacles
+        cylindrical_obstacles_msg = Float32MultiArray()
+        cylindrical_obstacles_data = []
+        for obstacle in self.CYLINDRICAL_OBSTACLES:
+            cylindrical_obstacles_data.extend(obstacle["center"])
+            cylindrical_obstacles_data.append(obstacle["radius"])
+            cylindrical_obstacles_data.append(obstacle["height"])
+        cylindrical_obstacles_msg.data = cylindrical_obstacles_data
+        self.cylindrical_obstacles_pub.publish(cylindrical_obstacles_msg)
+
         # Publish cylinder base
         cylinder_base_msg = Float32MultiArray()
         cylinder_base_msg.data = self.CYLINDER_BASE["center"] + [self.CYLINDER_BASE["radius"], self.CYLINDER_BASE["height"]]
@@ -108,18 +152,6 @@ class ParameterPublisherNode(Node):
         workspace_radius_msg = Float32()
         workspace_radius_msg.data = self.WORKSPACE_RADIUS
         self.workspace_radius_pub.publish(workspace_radius_msg)
-
-        # # Simulate button presses
-        # joy_msg = Joy()
-        # joy_msg.buttons = [0, 1, 1]  # Simulate buttons[1] and buttons[2] pressed
-        # self.joy_publisher.publish(joy_msg)
-
-        # falcon_msg = Joy()
-        # falcon_msg.buttons = [0, 1, 1]  # Simulate buttons[1] and buttons[2] pressed
-        # self.falcon_buttons_publisher.publish(falcon_msg)
-
-        # self.get_logger().info(f"Published parameters for trial: {self.get_parameter('trial').get_parameter_value().string_value}")
-        # self.get_logger().info("Simulated button presses on /joy and /falcon0/buttons.")
 
         # Publish starting position
         starting_position_msg = Float32MultiArray()

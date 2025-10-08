@@ -12,6 +12,7 @@ class LineVisualizerNode(Node):
 
         # Initialize positions and parameters
         self.spherical_obstacles = []  # List of spherical obstacles
+        self.cylindrical_obstacles = []  # List of cylindrical obstacles
         self.cylinder_base = {"center": [0.0, 0.0, 0.0], "radius": 0.0, "height": 0.0}
         self.target_position = [0.0, 0.0, 0.0]  # Default target position
         self.starting_position = [0.0, 0.0, 0.0]  # Default starting position
@@ -29,6 +30,7 @@ class LineVisualizerNode(Node):
 
         # Subscribers
         self.create_subscription(Float32MultiArray, '/spherical_obstacles', self.spherical_obstacles_callback, 10)
+        self.create_subscription(Float32MultiArray, '/cylindrical_obstacles', self.cylindrical_obstacles_callback, 10)
         self.create_subscription(Float32MultiArray, '/cylinder_base', self.cylinder_base_callback, 10)
         self.create_subscription(Float32MultiArray, '/target_position', self.target_position_callback, 10)
         self.create_subscription(PoseStamped, '/distance_metrics', self.distance_metrics_callback, 10)
@@ -49,6 +51,14 @@ class LineVisualizerNode(Node):
         self.spherical_obstacles = [
             {"center": data[i:i+3], "radius": data[i+3]}
             for i in range(0, len(data), 4)
+        ]
+        self.publish_markers()
+
+    def cylindrical_obstacles_callback(self, msg: Float32MultiArray):
+        data = list(msg.data)
+        self.cylindrical_obstacles = [
+            {"center": data[i:i+3], "radius": data[i+3], "height": data[i+4]}
+            for i in range(0, len(data), 5)
         ]
         self.publish_markers()
 
@@ -180,7 +190,23 @@ class LineVisualizerNode(Node):
                 )
             )
 
-        # Add cylinder marker
+        # Add cylindrical obstacle markers
+        for i, obstacle in enumerate(self.cylindrical_obstacles):
+            # Determine obstacle marker color based on distance to obstacles
+            obstacle_color = (1.0, 0.5, 0.0) if self.dist_to_obstacles == 0 else (0.8, 0.4, 0.0)
+
+            marker_array.markers.append(
+                self.make_cylinder_marker(
+                    id=150 + i,
+                    position=obstacle["center"],
+                    radius=obstacle["radius"],
+                    height=obstacle["height"],
+                    color_rgb=obstacle_color,
+                    namespace="cylindrical_obstacle"
+                )
+            )
+
+        # Add cylinder base marker
         marker_array.markers.append(
             self.make_cylinder_marker(
                 id=200,
@@ -188,7 +214,7 @@ class LineVisualizerNode(Node):
                 radius=self.cylinder_base["radius"],
                 height=self.cylinder_base["height"],
                 color_rgb=(0.0, 0.5, 0.0),
-                namespace="cylinder_obstacle"
+                namespace="cylinder_base"
             )
         )
 
