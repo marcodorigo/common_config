@@ -33,7 +33,7 @@ class ParameterPublisherNode(Node):
                 [-0.2, 0.5, 0.4],
                 [0.3, 0.3, 0.5],
                 [-0.1, 0.7, 0.2],
-                [0.4, 0.8, 0.35]
+                [0.4, 0.6, 0.35]
             ]
 
         elif trial == 'easy':
@@ -120,12 +120,29 @@ class ParameterPublisherNode(Node):
             self.STARTING_POSITION = [0.2, 0.6, 0.45]
             self.UNKNOWN_TARGETS = [
                 [0.04, 0.82, 0.16],
-                [-0.4, 0.7, 0.24], #to change
-                [0.34, 0.73, 0.32],
+                [-0.4, 0.7, 0.24],
+                [0.34, 0.7, 0.32],
                 [-0.35, 0.3, 0.5],
-                [0.57, 0.29, 0.41]
+                [0.57, 0.25, 0.41]
             ]
         
+        elif trial == 'back':
+            self.SPHERICAL_OBSTACLES = [
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0},
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0},
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0}
+            ]
+            self.CYLINDRICAL_OBSTACLES = [
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0, "height": 0.0},
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0, "height": 0.0},
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0, "height": 0.0}
+            ]
+            self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
+            self.TARGET_POSITION = [0.2, 0.6, 0.45]
+            self.WORKSPACE_RADIUS = 0.9
+            self.STARTING_POSITION = [0.0, 0.0, 0.0]
+            self.UNKNOWN_TARGETS = []
+
         else:  # Default case
             self.SPHERICAL_OBSTACLES = [
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0},

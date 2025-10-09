@@ -18,6 +18,8 @@ class LineVisualizerNode(Node):
         self.starting_position = [0.0, 0.0, 0.0]  # Default starting position
         self.end_effector_position = [0.0, 0.0, 0.0]  # Default end effector position
         self.unknown_targets = []  # List of unknown targets (via-points)
+        self.reached_targets = set()  # Set to track reached targets by index
+        self.target_tolerance = 0.025  # Tolerance for reaching targets (in meters)
 
         # Distances, safety coefficient, and decision
         self.dist_to_obstacles = 0.0
@@ -81,6 +83,19 @@ class LineVisualizerNode(Node):
         self.starting_position = list(msg.data)
         self.publish_markers()
 
+    def calculate_distance(self, pos1, pos2):
+        """Calculate Euclidean distance between two 3D points."""
+        return ((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2 + (pos1[2] - pos2[2])**2)**0.5
+
+    def check_reached_targets(self):
+        """Check if any unknown targets have been reached and mark them as reached."""
+        for i, target in enumerate(self.unknown_targets):
+            if i not in self.reached_targets:
+                distance = self.calculate_distance(self.end_effector_position, target)
+                if distance <= self.target_tolerance:
+                    self.reached_targets.add(i)
+                    self.get_logger().info(f"Unknown target {i} reached! Distance: {distance:.3f}")
+
     def end_effector_pose_callback(self, msg: PoseStamped):
         """Callback to handle the end effector pose."""
         self.end_effector_position = [
@@ -88,6 +103,7 @@ class LineVisualizerNode(Node):
             msg.pose.position.y,
             msg.pose.position.z
         ]
+        self.check_reached_targets()  # Check for reached targets
         self.publish_markers()
 
     def distance_metrics_callback(self, msg: PoseStamped):
@@ -196,6 +212,7 @@ class LineVisualizerNode(Node):
         """Callback to handle unknown targets (via-points)."""
         data = list(msg.data)
         self.unknown_targets = [data[i:i+3] for i in range(0, len(data), 3)]
+        self.reached_targets.clear()  # Reset reached targets when new targets are received
         self.publish_markers()
 
     def publish_markers(self):
@@ -266,17 +283,28 @@ class LineVisualizerNode(Node):
             )
         )
 
-        # Add unknown targets markers (yellow spheres)
+        # Add unknown targets markers (yellow spheres) - only show unreached targets
         for i, target in enumerate(self.unknown_targets):
-            marker_array.markers.append(
-                self.make_sphere_marker(
-                    id=350 + i,
-                    position=target,
-                    radius=0.04,  # Slightly smaller radius for via-points
-                    color_rgb=(1.0, 1.0, 0.0),  # Yellow color
-                    namespace="unknown_targets"
+            if i not in self.reached_targets:  # Only display targets that haven't been reached
+                marker_array.markers.append(
+                    self.make_sphere_marker(
+                        id=350 + i,
+                        position=target,
+                        radius=0.04,  # Slightly smaller radius for via-points
+                        color_rgb=(1.0, 1.0, 0.0),  # Yellow color
+                        namespace="unknown_targets"
+                    )
                 )
-            )
+
+        # Add DELETE markers for reached targets to ensure they disappear
+        for i in self.reached_targets:
+            delete_marker = Marker()
+            delete_marker.header.frame_id = "base_link"
+            delete_marker.header.stamp = self.get_clock().now().to_msg()
+            delete_marker.ns = "unknown_targets"
+            delete_marker.id = 350 + i
+            delete_marker.action = Marker.DELETE
+            marker_array.markers.append(delete_marker)
 
         # Add cylinder base marker to text marker array
         text_marker_array.markers.append(
@@ -303,6 +331,8 @@ class LineVisualizerNode(Node):
                                                                [0.5, -0.5, 0.6], "safety_text"))
         text_marker_array.markers.append(self.make_text_marker(405, f"Selected_Game: {self.selected_game}",
                                                                [0.5, -0.5, 0.5], "game_text"))
+        text_marker_array.markers.append(self.make_text_marker(406, f"Reached Targets: {len(self.reached_targets)}/{len(self.unknown_targets)}",
+                                                               [0.5, -0.5, 0.4], "reached_targets_text"))
 
         # Publish markers
         self.marker_publisher.publish(marker_array)
