@@ -20,12 +20,21 @@ class ParameterPublisherNode(Node):
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0}
             ]
             self.CYLINDRICAL_OBSTACLES = [
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0, "height": 0.0},
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0, "height": 0.0},
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0, "height": 0.0}
             ]
             self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
             self.TARGET_POSITION = [0.2, 0.6, 0.45]
             self.WORKSPACE_RADIUS = 0.9
             self.STARTING_POSITION = [0.0, 0.0, 0.0]
+            self.UNKNOWN_TARGETS = [
+                [0.1, 0.4, 0.3],
+                [-0.2, 0.5, 0.4],
+                [0.3, 0.3, 0.5],
+                [-0.1, 0.7, 0.2],
+                [0.4, 0.8, 0.35]
+            ]
 
         elif trial == 'easy':
             self.SPHERICAL_OBSTACLES = [
@@ -34,12 +43,15 @@ class ParameterPublisherNode(Node):
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0}
             ]
             self.CYLINDRICAL_OBSTACLES = [
-                {"center": [-0.1, 0.5, 0.0], "radius": 0.1, "height": 3.0}
+                {"center": [-0.1, 0.5, 0.0], "radius": 0.1, "height": 3.0},
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0, "height": 0.0},
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0, "height": 0.0}
             ]
             self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
             self.TARGET_POSITION = [-0.3, 0.4, 0.3]
             self.WORKSPACE_RADIUS = 0.9
             self.STARTING_POSITION = [0.2, 0.6, 0.45]
+            self.UNKNOWN_TARGETS = []
 
         elif trial == 'medium':
             self.SPHERICAL_OBSTACLES = [
@@ -48,12 +60,15 @@ class ParameterPublisherNode(Node):
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0}
             ]
             self.CYLINDRICAL_OBSTACLES = [
-                {"center": [0.06, 0.55, 0.0], "radius": 0.08, "height": 3.0}
+                {"center": [0.06, 0.55, 0.0], "radius": 0.08, "height": 3.0},
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0, "height": 0.0},
+                {"center": [0.0, 0.0, 0.0], "radius": 0.0, "height": 0.0}
             ]
             self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
             self.TARGET_POSITION = [0.3, 0.5, 0.45]
             self.WORKSPACE_RADIUS = 0.9
             self.STARTING_POSITION = [-0.3, 0.4, 0.3]
+            self.UNKNOWN_TARGETS = []
 
         elif trial == 'hard':
             self.SPHERICAL_OBSTACLES = [
@@ -70,6 +85,7 @@ class ParameterPublisherNode(Node):
             self.TARGET_POSITION = [-0.3, 0.4, 0.3]
             self.WORKSPACE_RADIUS = 0.9
             self.STARTING_POSITION = [0.3, 0.5, 0.45]
+            self.UNKNOWN_TARGETS = []
 
         elif trial == 'singularity':
             self.SPHERICAL_OBSTACLES = [
@@ -85,6 +101,30 @@ class ParameterPublisherNode(Node):
             self.TARGET_POSITION = [0.5, -0.5, 0.5]
             self.WORKSPACE_RADIUS = 0.9
             self.STARTING_POSITION = [-0.3, 0.4, 0.3]
+            self.UNKNOWN_TARGETS = []
+
+        elif trial == 'explore':
+            self.SPHERICAL_OBSTACLES = [
+                {"center": [0.2, 0.65, 0.25], "radius": 0.0},
+                {"center": [0.0, 0.45, 0.55], "radius": 0.0},
+                {"center": [-0.2, 0.7, 0.35], "radius": 0.0}
+            ]
+            self.CYLINDRICAL_OBSTACLES = [
+                {"center": [0.18, 0.75, 0.0], "radius": 0.07, "height": 3.0},
+                {"center": [0.0, 0.45, 0.0], "radius": 0.09, "height": 3.0},
+                {"center": [-0.2, 0.7, 0.0], "radius": 0.1, "height": 3.0}
+            ]
+            self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
+            self.TARGET_POSITION = [-0.3, 0.4, 0.3]
+            self.WORKSPACE_RADIUS = 0.9
+            self.STARTING_POSITION = [0.2, 0.6, 0.45]
+            self.UNKNOWN_TARGETS = [
+                [0.04, 0.82, 0.16],
+                [-0.4, 0.7, 0.24], #to change
+                [0.34, 0.73, 0.32],
+                [-0.35, 0.3, 0.5],
+                [0.57, 0.29, 0.41]
+            ]
         
         else:  # Default case
             self.SPHERICAL_OBSTACLES = [
@@ -99,6 +139,7 @@ class ParameterPublisherNode(Node):
             self.TARGET_POSITION = [0.1, 0.6, 0.45]
             self.WORKSPACE_RADIUS = 0.9
             self.STARTING_POSITION = [0.0, 0.0, 0.0]
+            self.UNKNOWN_TARGETS = []
 
         # Publishers
         self.spherical_obstacles_pub = self.create_publisher(Float32MultiArray, '/spherical_obstacles', 10)
@@ -107,6 +148,7 @@ class ParameterPublisherNode(Node):
         self.target_position_pub = self.create_publisher(Float32MultiArray, '/target_position', 10)
         self.workspace_radius_pub = self.create_publisher(Float32, '/workspace_radius', 10)
         self.starting_position_pub = self.create_publisher(Float32MultiArray, '/starting_position', 10)
+        self.unknown_targets_pub = self.create_publisher(Float32MultiArray, '/unknown_targets', 10)
 
         # Publishers for simulating button presses
         self.joy_publisher = self.create_publisher(Joy, '/joy', 10)
@@ -157,6 +199,14 @@ class ParameterPublisherNode(Node):
         starting_position_msg = Float32MultiArray()
         starting_position_msg.data = self.STARTING_POSITION
         self.starting_position_pub.publish(starting_position_msg)
+
+        # Publish unknown targets
+        unknown_targets_msg = Float32MultiArray()
+        unknown_targets_data = []
+        for target in self.UNKNOWN_TARGETS:
+            unknown_targets_data.extend(target)
+        unknown_targets_msg.data = unknown_targets_data
+        self.unknown_targets_pub.publish(unknown_targets_msg)
 
     def stop_publishing(self):
         self.publish_timer.cancel()

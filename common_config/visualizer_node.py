@@ -17,6 +17,7 @@ class LineVisualizerNode(Node):
         self.target_position = [0.0, 0.0, 0.0]  # Default target position
         self.starting_position = [0.0, 0.0, 0.0]  # Default starting position
         self.end_effector_position = [0.0, 0.0, 0.0]  # Default end effector position
+        self.unknown_targets = []  # List of unknown targets (via-points)
 
         # Distances, safety coefficient, and decision
         self.dist_to_obstacles = 0.0
@@ -40,10 +41,11 @@ class LineVisualizerNode(Node):
         self.create_subscription(Float32MultiArray, '/rrt_path', self.rrt_path_callback, 10)  # Subscribe to /rrt_path
         self.create_subscription(Float32MultiArray, '/starting_position', self.starting_position_callback, 10)
         self.create_subscription(PoseStamped, '/admittance_controller/pose_debug', self.end_effector_pose_callback, 10)
+        self.create_subscription(Float32MultiArray, '/unknown_targets', self.unknown_targets_callback, 10)
 
         # Publishers
-        self.marker_publisher = self.create_publisher(MarkerArray, '/visualization_marker_array', 10)
-        self.text_marker_publisher = self.create_publisher(MarkerArray, '/visualization_text_marker_array', 10)
+        self.marker_publisher = self.create_publisher(MarkerArray, '/visible_marker_array', 10)
+        self.text_marker_publisher = self.create_publisher(MarkerArray, '/debug_marker_array', 10)
         self.path_publisher = self.create_publisher(Path, '/rrt_path_viz', 10)  # Publisher for /rrt_path_viz
 
     def spherical_obstacles_callback(self, msg: Float32MultiArray):
@@ -149,7 +151,7 @@ class LineVisualizerNode(Node):
         marker.color.r = color_rgb[0]
         marker.color.g = color_rgb[1]
         marker.color.b = color_rgb[2]
-        marker.color.a = 0.5
+        marker.color.a = 0.6
         return marker
 
     def make_cylinder_marker(self, id, position, radius, height, color_rgb, namespace):
@@ -171,6 +173,31 @@ class LineVisualizerNode(Node):
         marker.color.a = 0.2
         return marker
 
+    def make_text_marker(self, id, text, position, namespace):
+        marker = Marker()
+        marker.header.frame_id = "base_link"
+        marker.header.stamp = self.get_clock().now().to_msg()
+        marker.ns = namespace
+        marker.id = id
+        marker.type = Marker.TEXT_VIEW_FACING
+        marker.action = Marker.ADD
+        marker.pose.position.x = position[0]
+        marker.pose.position.y = position[1]
+        marker.pose.position.z = position[2]
+        marker.scale.z = 0.1  # Text size
+        marker.color.r = 1.0
+        marker.color.g = 1.0
+        marker.color.b = 1.0
+        marker.color.a = 1.0
+        marker.text = text
+        return marker
+
+    def unknown_targets_callback(self, msg: Float32MultiArray):
+        """Callback to handle unknown targets (via-points)."""
+        data = list(msg.data)
+        self.unknown_targets = [data[i:i+3] for i in range(0, len(data), 3)]
+        self.publish_markers()
+
     def publish_markers(self):
         marker_array = MarkerArray()
         text_marker_array = MarkerArray()
@@ -178,7 +205,7 @@ class LineVisualizerNode(Node):
         # Add spherical obstacle markers
         for i, obstacle in enumerate(self.spherical_obstacles):
             # Determine obstacle marker color based on distance to obstacles
-            obstacle_color = (1.0, 0.0, 0.0) if self.dist_to_obstacles == 0 else (0.0, 0.0, 1.0)
+            obstacle_color = (1.0, 0.0, 0.0) if self.dist_to_obstacles == 0 else (1.0, 0.6, 0.0)
 
             marker_array.markers.append(
                 self.make_sphere_marker(
@@ -193,7 +220,7 @@ class LineVisualizerNode(Node):
         # Add cylindrical obstacle markers
         for i, obstacle in enumerate(self.cylindrical_obstacles):
             # Determine obstacle marker color based on distance to obstacles
-            obstacle_color = (1.0, 0.5, 0.0) if self.dist_to_obstacles == 0 else (0.8, 0.4, 0.0)
+            obstacle_color = (1.0, 0.0, 0.0) if self.dist_to_obstacles == 0 else (1.0, 0.6, 0.0)
 
             marker_array.markers.append(
                 self.make_cylinder_marker(
@@ -206,18 +233,6 @@ class LineVisualizerNode(Node):
                 )
             )
 
-        # Add cylinder base marker
-        marker_array.markers.append(
-            self.make_cylinder_marker(
-                id=200,
-                position=self.cylinder_base["center"],
-                radius=self.cylinder_base["radius"],
-                height=self.cylinder_base["height"],
-                color_rgb=(0.0, 0.5, 0.0),
-                namespace="cylinder_base"
-            )
-        )
-
         # Add target marker (green sphere)
         marker_array.markers.append(
             self.make_sphere_marker(
@@ -229,13 +244,13 @@ class LineVisualizerNode(Node):
             )
         )
 
-        # Add starting position marker (yellow sphere)
+        # Add starting position marker (green sphere)
         marker_array.markers.append(
             self.make_sphere_marker(
                 id=301,
                 position=self.starting_position,
                 radius=0.05,  # Fixed radius for the starting position marker
-                color_rgb=(1.0, 1.0, 0.0),  # Yellow color
+                color_rgb=(0.0, 1.0, 0.0),  # Green color
                 namespace="starting_position_marker"
             )
         )   
@@ -248,6 +263,30 @@ class LineVisualizerNode(Node):
                 radius=0.05,  # Fixed radius for the end effector marker
                 color_rgb=(0.5, 0.5, 0.5),  # Grey color
                 namespace="end_effector_marker"
+            )
+        )
+
+        # Add unknown targets markers (yellow spheres)
+        for i, target in enumerate(self.unknown_targets):
+            marker_array.markers.append(
+                self.make_sphere_marker(
+                    id=350 + i,
+                    position=target,
+                    radius=0.04,  # Slightly smaller radius for via-points
+                    color_rgb=(1.0, 1.0, 0.0),  # Yellow color
+                    namespace="unknown_targets"
+                )
+            )
+
+        # Add cylinder base marker to text marker array
+        text_marker_array.markers.append(
+            self.make_cylinder_marker(
+                id=200,
+                position=self.cylinder_base["center"],
+                radius=self.cylinder_base["radius"],
+                height=self.cylinder_base["height"],
+                color_rgb=(0.0, 0.5, 0.0),
+                namespace="cylinder_base"
             )
         )
 
@@ -269,23 +308,6 @@ class LineVisualizerNode(Node):
         self.marker_publisher.publish(marker_array)
         self.text_marker_publisher.publish(text_marker_array)
 
-    def make_text_marker(self, id, text, position, namespace):
-        marker = Marker()
-        marker.header.frame_id = "base_link"
-        marker.header.stamp = self.get_clock().now().to_msg()
-        marker.ns = namespace
-        marker.id = id
-        marker.type = Marker.TEXT_VIEW_FACING
-        marker.action = Marker.ADD
-        marker.pose.position.x = position[0]
-        marker.pose.position.y = position[1]
-        marker.pose.position.z = position[2]
-        marker.scale.z = 0.1  # Text size
-        marker.color.r = marker.color.g = marker.color.b = 1.0
-        marker.color.a = 1.0
-        marker.text = text
-        return marker
-
 
 def main(args=None):
     rclpy.init(args=args)
@@ -295,5 +317,5 @@ def main(args=None):
     rclpy.shutdown()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
