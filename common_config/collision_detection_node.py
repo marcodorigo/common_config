@@ -178,10 +178,10 @@ class CollisionDetectionNode(Node):
                     collision_detected = True
                     break
         
-        # Check cylinder base
-        if not collision_detected and self.cylinder_base is not None:
-            if self.check_cylinder_collision(self.end_effector_position, self.cylinder_base):
-                collision_detected = True
+        # # Check cylinder base -> Not needed anymore
+        # if not collision_detected and self.cylinder_base is not None:
+        #     if self.check_cylinder_collision(self.end_effector_position, self.cylinder_base):
+        #         collision_detected = True
         
         # Update collision state and count
         if collision_detected and not self.currently_in_collision:
