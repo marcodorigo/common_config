@@ -29,8 +29,16 @@ def generate_launch_description():
         output='screen',
     )
 
+    collision_detection_node = Node(
+        package='common_config',
+        executable='collision_detection_node',
+        name='collision_detection_node',
+        output='screen',
+    )
+
     return LaunchDescription([
         trial_arg,
         parameter_publisher_node,
-        visualizer_node
+        visualizer_node,
+        collision_detection_node
     ])

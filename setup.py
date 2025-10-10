@@ -23,6 +23,7 @@ setup(
         'console_scripts': [
             'parameter_publisher_node = common_config.parameter_publisher_node:main',
             'visualizer_node = common_config.visualizer_node:main',
+            'collision_detection_node = common_config.collision_detection_node:main',
         ],
     },
 )
