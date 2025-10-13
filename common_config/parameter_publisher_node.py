@@ -51,7 +51,13 @@ class ParameterPublisherNode(Node):
             self.TARGET_POSITION = [-0.3, 0.4, 0.3]
             self.WORKSPACE_RADIUS = 0.9
             self.STARTING_POSITION = [0.2, 0.6, 0.45]
-            self.UNKNOWN_TARGETS = []
+            self.UNKNOWN_TARGETS = [
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0]
+            ]
 
         elif trial == 'medium':
             self.SPHERICAL_OBSTACLES = [
