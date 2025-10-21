@@ -17,6 +17,7 @@ class LineVisualizerNode(Node):
         self.target_position = [0.0, 0.0, 0.0]  # Default target position
         self.starting_position = [0.0, 0.0, 0.0]  # Default starting position
         self.end_effector_position = [0.0, 0.0, 0.0]  # Default end effector position
+        self.acs_reference_position = [0.0, 0.0, 0.0]  # Default ACS reference position
         self.unknown_targets = []  # List of unknown targets (via-points)
         self.reached_targets = set()  # Set to track reached targets by index
         self.target_tolerance = 0.025  # Tolerance for reaching targets (in meters)
@@ -44,6 +45,7 @@ class LineVisualizerNode(Node):
         self.create_subscription(Float32MultiArray, '/starting_position', self.starting_position_callback, 10)
         self.create_subscription(PoseStamped, '/admittance_controller/pose_debug', self.end_effector_pose_callback, 10)
         self.create_subscription(Float32MultiArray, '/unknown_targets', self.unknown_targets_callback, 10)
+        self.create_subscription(PoseStamped, '/ACS_reference_point', self.acs_reference_callback, 10)
 
         # Publishers
         self.marker_publisher = self.create_publisher(MarkerArray, '/visible_marker_array', 10)
@@ -215,6 +217,15 @@ class LineVisualizerNode(Node):
         self.reached_targets.clear()  # Reset reached targets when new targets are received
         self.publish_markers()
 
+    def acs_reference_callback(self, msg: PoseStamped):
+        """Callback to handle the ACS reference point."""
+        self.acs_reference_position = [
+            msg.pose.position.x,
+            msg.pose.position.y,
+            msg.pose.position.z
+        ]
+        self.publish_markers()
+
     def publish_markers(self):
         marker_array = MarkerArray()
         text_marker_array = MarkerArray()
@@ -318,6 +329,28 @@ class LineVisualizerNode(Node):
             )
         )
 
+        # Add semi-transparent grey sphere around end effector (radius 0.1)
+        text_marker_array.markers.append(
+            self.make_sphere_marker(
+                id=500,
+                position=self.end_effector_position,
+                radius=0.05,
+                color_rgb=(0.5, 0.5, 0.5),  # Grey color
+                namespace="end_effector_circle"
+            )
+        )
+
+        # Add yellow sphere for ACS reference point
+        text_marker_array.markers.append(
+            self.make_sphere_marker(
+                id=501,
+                position=self.acs_reference_position,
+                radius=0.02,  # Small radius for reference point
+                color_rgb=(1.0, 1.0, 0.0),  # Yellow color
+                namespace="acs_reference"
+            )
+        )
+
         # Add text markers for distances and metrics
         text_marker_array.markers.append(self.make_text_marker(400, f"Dist_to_Obstacles: {self.dist_to_obstacles:.2f}",
                                                                [0.5, -0.5, 1.0], "distance_text"))
@@ -331,8 +364,7 @@ class LineVisualizerNode(Node):
                                                                [0.5, -0.5, 0.6], "safety_text"))
         text_marker_array.markers.append(self.make_text_marker(405, f"Selected_Game: {self.selected_game}",
                                                                [0.5, -0.5, 0.5], "game_text"))
-        text_marker_array.markers.append(self.make_text_marker(406, f"Reached Targets: {len(self.reached_targets)}/{len(self.unknown_targets)}",
-                                                               [0.5, -0.5, 0.4], "reached_targets_text"))
+        # text_marker_array.markers.append(self.make_text_marker(406, f"Reached Targets: {len(self.reached_targets)}/{len(self.unknown_targets)}", [0.5, -0.5, 0.4], "reached_targets_text"))
 
         # Publish markers
         self.marker_publisher.publish(marker_array)
