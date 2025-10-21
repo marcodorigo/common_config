@@ -51,7 +51,13 @@ class ParameterPublisherNode(Node):
             self.TARGET_POSITION = [-0.3, 0.4, 0.3]
             self.WORKSPACE_RADIUS = 0.9
             self.STARTING_POSITION = [0.2, 0.6, 0.45]
-            self.UNKNOWN_TARGETS = []
+            self.UNKNOWN_TARGETS = [
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0]
+            ]
 
         elif trial == 'medium':
             self.SPHERICAL_OBSTACLES = [
@@ -65,7 +71,7 @@ class ParameterPublisherNode(Node):
                 {"center": [0.0, 0.0, 0.0], "radius": 0.0, "height": 0.0}
             ]
             self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
-            self.TARGET_POSITION = [0.3, 0.5, 0.45]
+            self.TARGET_POSITION = [0.2, 0.6, 0.45]
             self.WORKSPACE_RADIUS = 0.9
             self.STARTING_POSITION = [-0.3, 0.4, 0.3]
             self.UNKNOWN_TARGETS = []
@@ -77,14 +83,14 @@ class ParameterPublisherNode(Node):
                 {"center": [-0.2, 0.7, 0.35], "radius": 0.0}
             ]
             self.CYLINDRICAL_OBSTACLES = [
-                {"center": [0.2, 0.67, 0.0], "radius": 0.07, "height": 3.0},
+                {"center": [0.18, 0.75, 0.0], "radius": 0.07, "height": 3.0},
                 {"center": [0.0, 0.45, 0.0], "radius": 0.09, "height": 3.0},
                 {"center": [-0.2, 0.7, 0.0], "radius": 0.1, "height": 3.0}
             ]
             self.CYLINDER_BASE = {"center": [0.0, 0.0, 0.0], "radius": 0.3, "height": 3.0}
             self.TARGET_POSITION = [-0.3, 0.4, 0.3]
             self.WORKSPACE_RADIUS = 0.9
-            self.STARTING_POSITION = [0.3, 0.5, 0.45]
+            self.STARTING_POSITION = [0.2, 0.6, 0.45]
             self.UNKNOWN_TARGETS = []
 
         elif trial == 'singularity':
@@ -120,7 +126,7 @@ class ParameterPublisherNode(Node):
             self.STARTING_POSITION = [0.2, 0.6, 0.45]
             self.UNKNOWN_TARGETS = [
                 [0.04, 0.82, 0.16],
-                [-0.4, 0.7, 0.24],
+                [-0.4, 0.6, 0.24],
                 [0.34, 0.7, 0.32],
                 [-0.35, 0.3, 0.5],
                 [0.57, 0.25, 0.41]
@@ -166,10 +172,6 @@ class ParameterPublisherNode(Node):
         self.workspace_radius_pub = self.create_publisher(Float32, '/workspace_radius', 10)
         self.starting_position_pub = self.create_publisher(Float32MultiArray, '/starting_position', 10)
         self.unknown_targets_pub = self.create_publisher(Float32MultiArray, '/unknown_targets', 10)
-
-        # Publishers for simulating button presses
-        self.joy_publisher = self.create_publisher(Joy, '/joy', 10)
-        self.falcon_buttons_publisher = self.create_publisher(Joy, '/falcon0/buttons', 10)
 
         # Start periodic publishing timer
         self.publish_timer = self.create_timer(1.0, self.publish_parameters)
